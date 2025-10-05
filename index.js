@@ -1,15 +1,13 @@
 import crypto from "crypto";
 
-import type { Association } from "mdast";
-import type { Node, Parent } from "unist";
 import { u } from "unist-builder";
 import { visit } from "unist-util-visit";
 
 export default function remarkInlineFootnotes() {
-  return (tree: Node) => {
-    visit(tree, "footnoteDefinition", (def: Association & Parent) => {
+  return (tree) => {
+    visit(tree, "footnoteDefinition", (def) => {
       // Replace footnote references with inline footnotes
-      visit(tree, "footnoteReference", (ref: Association, index, parent: Parent) => {
+      visit(tree, "footnoteReference", (ref, index, parent) => {
         // Only modify reference for this definition
         if (ref.identifier !== def.identifier)
           return;
@@ -18,7 +16,7 @@ export default function remarkInlineFootnotes() {
         const ident = crypto.randomBytes(4).toString("hex");
 
         // Fetch footnote content
-        const inner = (def.children?.[0] as Parent)?.children;
+        const inner = def.children?.[0]?.children;
 
         // Insert footnote reference
         parent.children.splice(
